@@ -21,7 +21,7 @@ public class Restaurante
     /**
      * La ruta a la carpeta donde se almacenan las facturas
      */
-    private static final String CARPETA_FACTURAS = "./facturas/";
+    private static final String CARPETA_FACTURAS = "facturas/";
 
     /**
      * La primera parte del nombre de los archivos de facturas
@@ -98,14 +98,28 @@ public class Restaurante
      */
     public void cerrarYGuardarPedido( ) throws NoHayPedidoEnCursoException, IOException
     {
-        if( pedidoEnCurso == null )
-            throw new NoHayPedidoEnCursoException( );
+    	if (pedidoEnCurso == null) {
+            throw new NoHayPedidoEnCursoException();
+        }
 
-        String nombreArchivo = PREFIJO_FACTURAS + pedidoEnCurso.getIdPedido( ) + ".txt";
-        pedidoEnCurso.guardarFactura( new File( CARPETA_FACTURAS + nombreArchivo ) );
+        // Asegurarse de que la carpeta "data/facturas" exista
+        File carpetaFacturas = new File("data/facturas");
+        if (!carpetaFacturas.exists()) {
+            boolean creada = carpetaFacturas.mkdirs(); // Crear la carpeta y subcarpetas si no existen
+            if (!creada) {
+                throw new IOException("No se pudo crear la carpeta de facturas en data/facturas");
+            }
+        }
+
+        // Definir la ruta del archivo de factura dentro de "data/facturas"
+        String nombreArchivo = PREFIJO_FACTURAS + pedidoEnCurso.getIdPedido() + ".txt";
+        File archivoFactura = new File(carpetaFacturas, nombreArchivo);
+
+        // Guardar la factura
+        pedidoEnCurso.guardarFactura(archivoFactura);
+        pedidos.add(pedidoEnCurso);
         pedidoEnCurso = null;
     }
-
     /**
      * Retorna el pedido actual en curso. Si no hay un pedido en curso, retorna null.
      * 

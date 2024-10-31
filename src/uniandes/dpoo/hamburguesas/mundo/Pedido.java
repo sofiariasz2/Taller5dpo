@@ -2,6 +2,7 @@ package uniandes.dpoo.hamburguesas.mundo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -154,14 +155,21 @@ public class Pedido
      * @param archivo El archivo donde debe quedar almacenada la factua del pedido
      * @throws FileNotFoundException Se lanza esta excepción si no se puede crear el archivo para guardar la factura
      */
-    public void guardarFactura( File archivo ) throws FileNotFoundException
-    {
-        String factura = generarTextoFactura( );
-
-        PrintWriter out;
-        out = new PrintWriter( archivo );
-        out.print( factura );
-        out.close( );
+    public void guardarFactura(File archivo) throws IOException {
+        // Verificar si el archivo es escribible
+        if (!archivo.canWrite()) {
+            throw new IOException("No se puede escribir en el archivo: " + archivo.getPath());
+        }
+        
+        String factura = generarTextoFactura();
+        try (PrintWriter out = new PrintWriter(archivo)) {
+            out.print(factura);
+        }
     }
+    
+    public static double getIVA() {
+        return IVA;
+    }
+
 
 }
